@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="cs">
+
+<head>
+    <meta charset="UTF-8">
+    <title>HLS player</title>
+    <link rel="stylesheet" href="css/video-js.min.css" />
+    <link rel="stylesheet" href="css/quality-selector.css">
+
+    <style>
+        .player-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        .player {
+            width: 45%; /* Adjust the width as needed */
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>HLS player</h1>
+
+    <div class="player-group">
+        <div class="player">
+            <h2>Player 1</h2>
+            <video id="hlsPlayer1" class="video-js" controls width="640" height="264" poster="preview.jpg">
+                <!-- Add your sources for Player 1 here -->
+                <source src="/hls/stream.m3u8" type="application/x-mpegURL">
+
+            </video>
+        </div>
+
+        <div class="player">
+            <h2>Player 2</h2>
+            <video id="hlsPlayer2" class="video-js" controls width="640" height="264" poster="preview.jpg">
+                <!-- Add your sources for Player 2 here -->
+                <source src="/hls/stream.m3u8" type="application/x-mpegURL">
+            </video>
+        </div>
+    </div>
+
+    <div class="player-group">
+        <div class="player">
+            <h2>Player 3</h2>
+            <video id="hlsPlayer3" class="video-js" controls width="640" height="264" poster="preview.jpg">
+                <!-- Add your sources for Player 3 here -->
+                <source src="/hls/stream.m3u8" type="application/x-mpegURL">
+            </video>
+        </div>
+
+        <div class="player">
+            <h2>Player 4</h2>
+            <video id="hlsPlayer4" class="video-js" controls width="640" height="264" poster="preview.jpg">
+                <!-- Add your sources for Player 4 here -->
+                <source src="/hls/stream.m3u8" type="application/x-mpegURL">
+            </video>
+        </div>
+    </div>
+
+    <script src="js/video.min.js"></script>
+    <script src="js/silvermine-videojs-quality-selector.min.js"></script>
+    <script>
+        function initializePlayer(playerId, sources) {
+            var playerElement = document.getElementById(playerId);
+
+            sources.forEach(source => {
+                var srcNode = document.createElement('source');
+                srcNode.setAttribute('label', source.label);
+                srcNode.src = source.src;
+                srcNode.type = 'application/x-mpegURL';
+                playerElement.appendChild(srcNode);
+            });
+
+            var player = videojs(playerElement);
+            player.controlBar.addChild('QualitySelector');
+
+            var previewCanvas = document.createElement('canvas');
+            previewCanvas.width = 400;
+            previewCanvas.height = 225; // Adjust height as needed
+            document.body.appendChild(previewCanvas);
+
+            var previewContext = previewCanvas.getContext('2d');
+
+            // Simulate getting frames from camera
+            setInterval(function () {
+                // Draw video frame onto canvas
+                previewContext.drawImage(playerElement, 0, 0, previewCanvas.width, previewCanvas.height);
+                
+                // Convert canvas to JPEG data URL
+                var jpegDataUrl = previewCanvas.toDataURL('image/jpeg', 0.8); // Adjust quality as needed
+
+                // Update preview image based on captured frame
+                player.poster(jpegDataUrl);
+            }, 6000); // Capture frame every 1000 milliseconds (1 second)
+        }
+
+        // Initialize Player 1
+        initializePlayer('hlsPlayer1', [
+            { label: '360p', src: '/hls/stream_360.m3u8' },
+            { label: '480p', src: '/hls/stream_480.m3u8' },
+            { label: '720p', src: '/hls/stream_720.m3u8' },
+            { label: '1080p', src: '/hls/stream_1080.m3u8' }
+        ]);
+
+        // Initialize Player 2
+        initializePlayer('hlsPlayer2', [
+            // Add sources for Player 2
+        ]);
+
+        // Initialize Player 3
+        initializePlayer('hlsPlayer3', [
+            // Add sources for Player 3
+        ]);
+
+        // Initialize Player 4
+        initializePlayer('hlsPlayer4', [
+            // Add sources for Player 4
+        ]);
+    </script>
+</body>
+
+</html>
